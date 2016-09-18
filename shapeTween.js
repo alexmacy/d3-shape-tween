@@ -4,6 +4,9 @@ function shapeTweenSides(shape1, shape2, findStart) {
 
     var fromShape = [], toShape = [], newShape = [];
 
+    //match the orientation of the shapes
+    if (d3.polygonArea(shape1) < 0 != d3.polygonArea(shape2) < 0) shape2.reverse();
+
     //make sure fromShape is the longer array
     if (shape1.length > shape2.length) {
         fromShape = shape1;
@@ -13,23 +16,20 @@ function shapeTweenSides(shape1, shape2, findStart) {
         toShape = shape1;            
     }
 
-    //make sure the orientation of the shapes match
-    if (d3.polygonArea(fromShape) < 0 != d3.polygonArea(toShape) < 0) toShape.reverse();
-
     //calculate how many sides on toShape and how many points per side in order to have a matching number of points
     var sides = toShape.length;
     var stepsPerSide = Math.floor(fromShape.length/sides);
 
     //cycle through each side, adding points along that side's path
     for (i=0; i<sides; i++) {
-        var pointA = toShape[i];
+        var pointA = shape2[i];
         var pointB;
 
         //if it's the last side, change the step count to use the rest of the points needed to match lengths
-        if (toShape[i+1]) {
-            pointB = toShape[i+1];
+        if (shape2[i+1]) {
+            pointB = shape2[i+1];
         } else {
-            pointB = toShape[0];
+            pointB = shape2[0];
             stepsPerSide = fromShape.length - newShape.length;
         }
         
@@ -37,8 +37,8 @@ function shapeTweenSides(shape1, shape2, findStart) {
             stepY = (pointB[1] - pointA[1])/stepsPerSide;
 
         for (n=0; n<stepsPerSide;n++) {
-            var newX = toShape[i][0] + (stepX * n),
-                newY = toShape[i][1] + (stepY * n);
+            var newX = shape2[i][0] + (stepX * n),
+                newY = shape2[i][1] + (stepY * n);
             newShape.push([newX, newY])
         }
     }
